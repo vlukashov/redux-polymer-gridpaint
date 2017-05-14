@@ -1,0 +1,9 @@
+### IntelliJ IDEA
+.idea/
+*.iml
+
+# Bower components
+bower_components/
+
+### `polymer build` output
+build/

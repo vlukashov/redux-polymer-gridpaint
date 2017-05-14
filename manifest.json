@@ -1,0 +1,7 @@
+{
+  "name": "redux-polymer-gridpaint",
+  "short_name": "redux-polymer-gridpaint",
+  "description": "A demo app for using Redux with Polymer 2",
+  "start_url": "/",
+  "display": "standalone"
+}
