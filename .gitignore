@@ -2,6 +2,9 @@
 .idea/
 *.iml
 
+### Node Modules
+node_modules/
+
 # Bower components
 bower_components/
 
