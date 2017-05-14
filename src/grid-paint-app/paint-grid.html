@@ -4,7 +4,7 @@
 
 <link rel="import" href="redux-mixin.html">
 
-<dom-module id="x-grid">
+<dom-module id="paint-grid">
   <template>
     <style>
       :host {
@@ -37,9 +37,9 @@
     </template>
   </template>
   <script>
-      class Grid extends ReduxMixin(Polymer.GestureEventListeners(Polymer.Element)) {
+      class PaintGrid extends ReduxMixin(Polymer.GestureEventListeners(Polymer.Element)) {
           static get is() {
-              return 'x-grid'
+              return 'paint-grid'
           }
 
           static get properties() {
@@ -96,6 +96,6 @@
           }
     }
 
-    customElements.define(Grid.is, Grid);
+    customElements.define(PaintGrid.is, PaintGrid);
   </script>
 </dom-module>

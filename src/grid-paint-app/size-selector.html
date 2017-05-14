@@ -2,7 +2,7 @@
 
 <link rel="import" href="redux-mixin.html">
 
-<dom-module id="x-size-setter">
+<dom-module id="size-selector">
   <template>
     <style>
       :host {
@@ -20,9 +20,9 @@
       </label>
   </template>
   <script>
-      class SizeSetter extends ReduxMixin(Polymer.Element) {
+      class SizeSelector extends ReduxMixin(Polymer.Element) {
           static get is() {
-              return 'x-size-setter'
+              return 'size-selector'
           }
 
           static get properties() {
@@ -55,6 +55,6 @@
           }
       }
 
-      customElements.define(SizeSetter.is, SizeSetter);
+      customElements.define(SizeSelector.is, SizeSelector);
   </script>
 </dom-module>
