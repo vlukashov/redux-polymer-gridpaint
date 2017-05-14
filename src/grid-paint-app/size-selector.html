@@ -25,43 +25,23 @@
 
           static get properties() {
               return {
-                  store: Object,
-
-                  width: Number, // retrieved from the store
-                  height: Number // retrieved from the store
+                  width: {
+                      type: Number,
+                      notify: true
+                  },
+                  height: {
+                      type: Number,
+                      notify: true
+                  }
               }
           }
 
-          connectedCallback() {
-              this._subscription = this.store.subscribe(() => this._applyState());
-              this._applyState();
-          }
-
-          disconnectedCallback() {
-              this._subscription.unsubscribe();
-              this._subscription = null;
-          }
-
-          _applyState() {
-              const state = this.store.getState();
-              this.width = state.width;
-              this.height = state.height;
-          }
-
           handleWidthChange(event) {
-              this.store.dispatch({
-                  type: 'SET_GRID_SIZE',
-                  width: event.target.value,
-                  height: this.height
-              });
+              this.width = event.target.value;
           }
 
           handleHeightChange(event) {
-              this.store.dispatch({
-                  type: 'SET_GRID_SIZE',
-                  width: this.width,
-                  height: event.target.value
-              });
+              this.height = event.target.value;
           }
       }
 

@@ -12,8 +12,8 @@
     </style>
     <h1>Grid Paint</h1>
     <p>Tap on a cell to toggle its color</p>
-    <size-selector store="[[store]]"></size-selector>
-    <paint-grid store="[[store]]"></paint-grid>
+    <size-selector width="{{width}}" height="{{height}}"></size-selector>
+    <paint-grid width="[[width]]" height="[[height]]" cells="[[cells]]"></paint-grid>
   </template>
 
   <script>
@@ -22,82 +22,34 @@
        * @polymer
        */
       class GridPaintApp extends Polymer.Element {
-          static get is() { return 'grid-paint-app'; }
+          static get is() {
+              return 'grid-paint-app';
+
+          }
           static get properties() {
               return {
-                  store: {
-                      type: Object,
-                      value: GridPaintApp.createStore
-                  }
-              };
-          }
-
-          static createStore() {
-              const initial = {
-                  width: 10,
-                  height: 10,
-                  cells: [
-                      0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
-                      0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
-                      0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-                      1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                      1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                      1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
-                      0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-                      0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
-                      0, 0, 0, 1, 1, 1, 1, 0, 0, 0
-                  ]
-              };
-
-              const reducer = (state, action) => {
-                  switch (action.type) {
-                      case 'SET_GRID_SIZE':
-                          const newCells = new Array(action.width * action.height);
-                          for (let w = 0; w < action.width; w += 1) {
-                              for (let h = 0; h < action.height; h += 1) {
-                                  newCells[action.width * h + w] =
-                                      w < state.width && h < state.height ? state.cells[state.width * h + w] : 0;
-                              }
-                          }
-
-                          return Object.assign({}, state, {
-                              width: action.width,
-                              height: action.height,
-                              cells: newCells
-                          });
-                      case 'TOGGLE_CELL':
-                          const cells = [...state.cells];
-                          cells[state.width * action.h + action.w] = cells[state.width * action.h + action.w] > 0 ? 0 : 1;
-
-                          return Object.assign({}, state, {
-                              cells: cells
-                          });
-                      default:
-                          return state;
-                  }
-              };
-
-              let state = initial;
-              let listeners = [];
-
-              return {
-                  getState() {
-                      return state;
+                  width: {
+                      type: Number,
+                      value: 10
                   },
-
-                  dispatch(action) {
-                      state = reducer(state, action);
-                      listeners.forEach(listener => listener());
+                  height: {
+                      type: Number,
+                      value: 10
                   },
-
-                  subscribe(listener) {
-                      listeners.push(listener);
-                      return {
-                          unsubscribe() {
-                              listeners = listeners.filter(l => l !== listener);
-                          }
-                      };
+                  cells: {
+                      type: Array,
+                      value: () => [
+                          0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
+                          0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                          0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                          1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                          1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                          1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                          1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
+                          0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                          0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                          0, 0, 0, 1, 1, 1, 1, 0, 0, 0
+                      ]
                   }
               };
           }

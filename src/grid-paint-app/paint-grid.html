@@ -42,29 +42,48 @@
 
           static get properties() {
               return {
-                  store: Object,
+                  width: {
+                      type: Number,
+                      observer: '_onWidthChanged'
+                  },
+                  height:  {
+                      type: Number,
+                      observer: '_onHeightChanged'
+                  },
+                  cells: Array,
 
-                  width: Number, // retrieved from the store
-                  height: Number, // retrieved from the store
-                  rows: Array, // retrieved from the store
+                  rows: {
+                      type: Array,
+                      computed: '_computeRows(width, height, cells)'
+                  }
               }
           }
 
-          connectedCallback() {
-              this._subscription = this.store.subscribe(() => this._applyState());
-              this._applyState();
+          _onWidthChanged(newValue, oldValue) {
+              if (oldValue !== undefined) {
+                  this._onSizeChanged(
+                      { width: newValue, height: this.height },
+                      { width: oldValue, height: this.height });
+              }
           }
 
-          disconnectedCallback() {
-              this._subscription.unsubscribe();
-              this._subscription = null;
+          _onHeightChanged(newValue, oldValue) {
+              if (oldValue !== undefined) {
+                  this._onSizeChanged(
+                      {width: this.width, height: newValue},
+                      {width: this.width, height: oldValue});
+              }
           }
 
-          _applyState() {
-              const state = this.store.getState();
-              this.width = state.width;
-              this.height = state.height;
-              this.rows = this._computeRows(state.width, state.height, state.cells);
+          _onSizeChanged(newSize, oldSize) {
+              const cells = new Array(newSize.width * newSize.height);
+              for (let w = 0; w < newSize.width; w += 1) {
+                  for (let h = 0; h < newSize.height; h += 1) {
+                      cells[newSize.width * h + w] =
+                          w < oldSize.width && h < oldSize.height ? this.cells[oldSize.width * h + w] : 0;
+                  }
+              }
+              this.cells = cells;
           }
 
           _computeRows(width, height, cells) {
@@ -88,11 +107,8 @@
           }
 
           toggleCell(event) {
-              this.store.dispatch({
-                  type: 'TOGGLE_CELL',
-                  w: event.model.cell.w,
-                  h: event.model.cell.h
-              });
+              this.set(`rows.${event.model.cell.h}.cells.${event.model.cell.w}.isFilled`,
+                  !this.rows[event.model.cell.h].cells[event.model.cell.w].isFilled);
           }
     }
 
