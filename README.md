@@ -1,33 +1,27 @@
-# \<redux-polymer-gridpaint\>
+# A demo app for using Redux with Polymer 2
 
-A demo app for using Redux with Polymer 2
+This small demo application shows how the principles of [Redux](http://redux.js.org/) can be applied to building an app with [Polymer 2](https://www.polymer-project.org/). It uses the Redux implementation from the [polymer-redux](https://github.com/tur-nr/polymer-redux/tree/polymer-2) library (and therefore works well with the [React DevTools](https://github.com/zalmoxisus/redux-devtools-extension) Chrome extension).
 
-## Install the Polymer-CLI
+This application is based off of [another Redux demo app](https://github.com/argelius/react-redux-timetravel).
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
-
-## Viewing Your Application
-
-```
-$ polymer serve
-```
-
-## Building Your Application
-
-```
-$ polymer build
+## Installation
+requires Node and NPM
+```shell
+$ git clone https://github.com/vlukashov/redux-polymer-gridpaint.git
+$ cd redux-polymer-gridpaint
+$ npm install
 ```
 
-This will create builds of your application in the `build/` directory, optimized to be served in production. You can then serve the built versions by giving `polymer serve` a folder to serve from:
-
-```
-$ polymer serve build/default
+## Start
+Starts a development server on [localhost:8081](http://localhost:8081)
+```shell
+$ npm start
 ```
 
 ## Running Tests
 
 ```
-$ polymer test
+$ npm test
 ```
 
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+The application is set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to execute the test suite locally.
