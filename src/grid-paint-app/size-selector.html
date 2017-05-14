@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 
-<dom-module id="x-size-setter">
+<dom-module id="size-selector">
   <template>
     <style>
       :host {
@@ -11,17 +10,17 @@
     </style>
       <label>
         Width
-        <input on-change="handleWidthChange" value$="[[width]]" type="number" min="0" max="20" />
+        <input on-change="handleWidthChange" value="[[width]]" type="number" min="0" max="20" />
       </label>
       <label>
         Height
-        <input on-change="handleHeightChange" value$="[[height]]" type="number" min="0" max="20" />
+        <input on-change="handleHeightChange" value="[[height]]" type="number" min="0" max="20" />
       </label>
   </template>
   <script>
-      class SizeSetter extends Polymer.GestureEventListeners(Polymer.Element) {
+      class SizeSelector extends Polymer.Element {
           static get is() {
-              return 'x-size-setter'
+              return 'size-selector'
           }
 
           static get properties() {
@@ -78,6 +77,6 @@
           }
       }
 
-      customElements.define(SizeSetter.is, SizeSetter);
+      customElements.define(SizeSelector.is, SizeSelector);
   </script>
 </dom-module>

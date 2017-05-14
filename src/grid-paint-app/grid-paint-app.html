@@ -1,58 +1,33 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="x-grid.html">
-<link rel="import" href="x-size-setter.html">
 
-<dom-module id="gridpaint-app">
+<link rel="import" href="size-selector.html">
+<link rel="import" href="paint-grid.html">
+
+<dom-module id="grid-paint-app">
   <template>
     <style>
       :host {
         display: block;
       }
     </style>
-    <h1>Try tapping on the grid cells below to toggle their color:</h1>
-    <x-grid store="[[store]]"></x-grid>
-    <x-size-setter store="[[store]]"></x-size-setter>
+    <h1>Grid Paint</h1>
+    <p>Tap on a cell to toggle its color</p>
+    <size-selector store="[[store]]"></size-selector>
+    <paint-grid store="[[store]]"></paint-grid>
   </template>
 
   <script>
-      class AppStore {
-          constructor(reducer, initialState) {
-              this.reducer = reducer;
-              this.state = initialState;
-              this.listeners = [];
-          }
-
-          getState() {
-              return this.state;
-          }
-
-          dispatch(action) {
-              this.state = this.reducer(this.state, action);
-              this.listeners.forEach(listener => listener());
-          }
-
-          subscribe(listener) {
-              const self = this;
-              self.listeners.push(listener);
-              return {
-                  unsubscribe: () => {
-                      self.listeners = self.listeners.filter(l => l !== listener);
-                  }
-              };
-          }
-      }
-
       /**
        * @customElement
        * @polymer
        */
-      class GridpaintApp extends Polymer.Element {
-          static get is() { return 'gridpaint-app'; }
+      class GridPaintApp extends Polymer.Element {
+          static get is() { return 'grid-paint-app'; }
           static get properties() {
               return {
                   store: {
                       type: Object,
-                      value: GridpaintApp.createStore
+                      value: GridPaintApp.createStore
                   }
               };
           }
@@ -103,10 +78,31 @@
                   }
               };
 
-              return new AppStore(reducer, initial);
+              let state = initial;
+              let listeners = [];
+
+              return {
+                  getState() {
+                      return state;
+                  },
+
+                  dispatch(action) {
+                      state = reducer(state, action);
+                      listeners.forEach(listener => listener());
+                  },
+
+                  subscribe(listener) {
+                      listeners.push(listener);
+                      return {
+                          unsubscribe() {
+                              listeners = listeners.filter(l => l !== listener);
+                          }
+                      };
+                  }
+              };
           }
       }
 
-      window.customElements.define(GridpaintApp.is, GridpaintApp);
+      window.customElements.define(GridPaintApp.is, GridPaintApp);
   </script>
 </dom-module>
