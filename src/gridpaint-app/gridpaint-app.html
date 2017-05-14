@@ -10,50 +10,103 @@
       }
     </style>
     <h1>Try tapping on the grid cells below to toggle their color:</h1>
-    <x-grid width="[[width]]" height="[[height]]" cells="[[_wrapCells(cells)]]"></x-grid>
-    <x-size-setter width="[[width]]" height="[[height]]"></x-size-setter>
+    <x-grid store="[[store]]"></x-grid>
+    <x-size-setter store="[[store]]"></x-size-setter>
   </template>
 
   <script>
-    /**
-     * @customElement
-     * @polymer
-     */
-    class GridpaintApp extends Polymer.Element {
-      static get is() { return 'gridpaint-app'; }
-      static get properties() {
-        return {
-          width: {
-              type: Number,
-              value: 10
-          },
-          height: {
-              type: Number,
-              value: 10
-          },
-          cells: {
-              type: Array,
-              value: () => [
-                  0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
-                  0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
-                  0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-                  1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                  1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                  1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                  1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
-                  0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-                  0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
-                  0, 0, 0, 1, 1, 1, 1, 0, 0, 0
-              ]
+      class AppStore {
+          constructor(reducer, initialState) {
+              this.reducer = reducer;
+              this.state = initialState;
+              this.listeners = [];
           }
-        };
+
+          getState() {
+              return this.state;
+          }
+
+          dispatch(action) {
+              this.state = this.reducer(this.state, action);
+              this.listeners.forEach(listener => listener());
+          }
+
+          subscribe(listener) {
+              const self = this;
+              self.listeners.push(listener);
+              return {
+                  unsubscribe: () => {
+                      self.listeners = self.listeners.filter(l => l !== listener);
+                  }
+              };
+          }
       }
 
-      _wrapCells(cells) {
-          return cells.map(cell => ({ isFilled: cell > 0 }));
-      }
-    }
+      /**
+       * @customElement
+       * @polymer
+       */
+      class GridpaintApp extends Polymer.Element {
+          static get is() { return 'gridpaint-app'; }
+          static get properties() {
+              return {
+                  store: {
+                      type: Object,
+                      value: GridpaintApp.createStore
+                  }
+              };
+          }
 
-    window.customElements.define(GridpaintApp.is, GridpaintApp);
+          static createStore() {
+              const initial = {
+                  width: 10,
+                  height: 10,
+                  cells: [
+                      0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
+                      0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                      0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                      1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                      1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                      1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                      1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
+                      0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                      0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                      0, 0, 0, 1, 1, 1, 1, 0, 0, 0
+                  ]
+              };
+
+              const reducer = (state, action) => {
+                  switch (action.type) {
+                      case 'SET_GRID_SIZE':
+                          const newCells = new Array(action.width * action.height);
+                          for (let w = 0; w < action.width; w += 1) {
+                              for (let h = 0; h < action.height; h += 1) {
+                                  newCells[action.width * h + w] =
+                                      w < state.width && h < state.height ? state.cells[state.width * h + w] : 0;
+                              }
+                          }
+
+                          return Object.assign({}, state, {
+                              width: action.width,
+                              height: action.height,
+                              cells: newCells
+                          });
+                      case 'TOGGLE_CELL':
+                          const cells = [...state.cells];
+                          cells[state.width * action.h + action.w] = cells[state.width * action.h + action.w] > 0 ? 0 : 1;
+
+                          return Object.assign({}, state, {
+                              cells: cells
+                          });
+                      default:
+                          return state;
+                  }
+              };
+
+              return new AppStore(reducer, initial);
+          }
+      }
+
+      window.customElements.define(GridpaintApp.is, GridpaintApp);
   </script>
 </dom-module>

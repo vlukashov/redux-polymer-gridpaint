@@ -26,7 +26,7 @@
         background-color: black;
       }
     </style>
-    <template is="dom-repeat" items="[[_rows]]" as="row">
+    <template is="dom-repeat" items="[[rows]]" as="row">
       <div class="row">
         <template is="dom-repeat" items="[[row.cells]]" as="cell">
           <div class$="[[_getCellClass(cell.isFilled)]]" on-tap="toggleCell" cell-w="[[cell.w]]" cell-h="[[cell.h]]"></div>
@@ -42,14 +42,41 @@
 
           static get properties() {
               return {
+                  store: Object,
+
                   width: Number, // server-bound
                   height: Number, // server-bound
-                  cells: Array, // server-bound
-                  _rows: {
-                      type: Array,
-                      computed: '_computeRows(width, height, cells)'
-                  }
+                  rows: Array, // server-bound
               }
+          }
+
+          connectedCallback() {
+              this._subscribe();
+              this._render();
+          }
+
+          disconnectedCallback() {
+              this._unsubscribe();
+          }
+
+          _subscribe() {
+              this._subscription = this.store.subscribe(() => {
+                  this._render();
+              });
+          }
+
+          _unsubscribe() {
+              if (this._subscription) {
+                  this._subscription.unsubscribe();
+                  this._subscription = null;
+              }
+          }
+
+          _render() {
+              const state = this.store.getState();
+              this.width = state.width;
+              this.height = state.height;
+              this.rows = this._computeRows(state.width, state.height, state.cells);
           }
 
           _computeRows(width, height, cells) {
@@ -61,7 +88,7 @@
               for (let h = 0; h < height; h += 1) {
                   let row = [];
                   for (let w = 0; w < width; w += 1) {
-                      row.push({ w: w, h: h, isFilled: cells[width * h + w].isFilled });
+                      row.push({ w: w, h: h, isFilled: cells[width * h + w] > 0 });
                   }
                   rows.push({ cells: row });
               }
@@ -70,6 +97,14 @@
 
           _getCellClass(isFilled) {
               return 'cell' + (isFilled ? ' cell--filled' : '');
+          }
+
+          toggleCell(event) {
+              this.store.dispatch({
+                  type: 'TOGGLE_CELL',
+                  w: event.model.cell.w,
+                  h: event.model.cell.h
+              });
           }
     }
 
