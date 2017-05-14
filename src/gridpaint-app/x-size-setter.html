@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
+
+<link rel="import" href="redux-mixin.html">
 
 <dom-module id="x-size-setter">
   <template>
@@ -11,70 +12,46 @@
     </style>
       <label>
         Width
-        <input on-change="handleWidthChange" value$="[[width]]" type="number" min="0" max="20" />
+        <input on-change="handleWidthChange" value="[[width]]" type="number" min="0" max="20" />
       </label>
       <label>
         Height
-        <input on-change="handleHeightChange" value$="[[height]]" type="number" min="0" max="20" />
+        <input on-change="handleHeightChange" value="[[height]]" type="number" min="0" max="20" />
       </label>
   </template>
   <script>
-      class SizeSetter extends Polymer.GestureEventListeners(Polymer.Element) {
+      class SizeSetter extends ReduxMixin(Polymer.Element) {
           static get is() {
               return 'x-size-setter'
           }
 
           static get properties() {
               return {
-                  store: Object,
-
-                  width: Number, // server-bound
-                  height: Number // server-bound
+                  width: {
+                      type: Number,
+                      statePath: 'width'
+                  },
+                  height: {
+                      type: Number,
+                      statePath: 'height'
+                  }
               }
           }
 
-          connectedCallback() {
-              this._subscribe();
-              this._render();
-          }
-
-          disconnectedCallback() {
-              this._unsubscribe();
-          }
-
-          _subscribe() {
-              this._subscription = this.store.subscribe(() => {
-                  this._render();
-              });
-          }
-
-          _unsubscribe() {
-              if (this._subscription) {
-                  this._subscription.unsubscribe();
-                  this._subscription = null;
-              }
-          }
-
-          _render() {
-              const state = this.store.getState();
-              this.width = state.width;
-              this.height = state.height;
+          static get actions() {
+              return {
+                  setGridSize(width, height) {
+                      return { type: 'SET_GRID_SIZE', width, height };
+                  }
+              };
           }
 
           handleWidthChange(event) {
-              this.store.dispatch({
-                  type: 'SET_GRID_SIZE',
-                  width: event.target.value,
-                  height: this.height
-              });
+              this.dispatch('setGridSize', event.target.value, this.height);
           }
 
           handleHeightChange(event) {
-              this.store.dispatch({
-                  type: 'SET_GRID_SIZE',
-                  width: this.width,
-                  height: event.target.value
-              });
+              this.dispatch('setGridSize', this.width, event.target.value);
           }
       }
 

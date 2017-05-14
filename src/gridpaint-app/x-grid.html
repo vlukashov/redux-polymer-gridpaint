@@ -2,6 +2,8 @@
 <link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 
+<link rel="import" href="redux-mixin.html">
+
 <dom-module id="x-grid">
   <template>
     <style>
@@ -26,7 +28,7 @@
         background-color: black;
       }
     </style>
-    <template is="dom-repeat" items="[[rows]]" as="row">
+    <template is="dom-repeat" items="[[_rows]]" as="row">
       <div class="row">
         <template is="dom-repeat" items="[[row.cells]]" as="cell">
           <div class$="[[_getCellClass(cell.isFilled)]]" on-tap="toggleCell" cell-w="[[cell.w]]" cell-h="[[cell.h]]"></div>
@@ -35,52 +37,42 @@
     </template>
   </template>
   <script>
-      class Grid extends Polymer.GestureEventListeners(Polymer.Element) {
+      class Grid extends ReduxMixin(Polymer.GestureEventListeners(Polymer.Element)) {
           static get is() {
               return 'x-grid'
           }
 
           static get properties() {
               return {
-                  store: Object,
-
-                  width: Number, // server-bound
-                  height: Number, // server-bound
-                  rows: Array, // server-bound
+                  width: {
+                      type: Number,
+                      statePath: 'width'
+                  },
+                  height: {
+                      type: Number,
+                      statePath: 'height'
+                  },
+                  cells: {
+                      type: Array,
+                      statePath: 'cells'
+                  },
+                  _rows: {
+                      type: Array,
+                      computed: '_computeRows(width, height, cells)'
+                  }
               }
           }
 
-          connectedCallback() {
-              this._subscribe();
-              this._render();
-          }
-
-          disconnectedCallback() {
-              this._unsubscribe();
-          }
-
-          _subscribe() {
-              this._subscription = this.store.subscribe(() => {
-                  this._render();
-              });
-          }
-
-          _unsubscribe() {
-              if (this._subscription) {
-                  this._subscription.unsubscribe();
-                  this._subscription = null;
+          static get actions() {
+              return {
+                  toggleCell(w, h) {
+                      return { type: 'TOGGLE_CELL', w, h };
+                  }
               }
-          }
-
-          _render() {
-              const state = this.store.getState();
-              this.width = state.width;
-              this.height = state.height;
-              this.rows = this._computeRows(state.width, state.height, state.cells);
           }
 
           _computeRows(width, height, cells) {
-              if (cells.length < width * height) {
+              if (!cells || cells.length < width * height) {
                   return [];
               }
 
@@ -100,11 +92,7 @@
           }
 
           toggleCell(event) {
-              this.store.dispatch({
-                  type: 'TOGGLE_CELL',
-                  w: event.model.cell.w,
-                  h: event.model.cell.h
-              });
+              this.dispatch('toggleCell', event.model.cell.w, event.model.cell.h);
           }
     }
 
