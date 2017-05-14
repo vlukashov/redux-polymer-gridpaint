@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="x-grid.html">
+<link rel="import" href="x-size-setter.html">
 
 <dom-module id="gridpaint-app">
   <template>
@@ -7,7 +9,9 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+    <h1>Try tapping on the grid cells below to toggle their color:</h1>
+    <x-grid width="[[width]]" height="[[height]]" cells="[[_wrapCells(cells)]]"></x-grid>
+    <x-size-setter width="[[width]]" height="[[height]]"></x-size-setter>
   </template>
 
   <script>
@@ -19,11 +23,34 @@
       static get is() { return 'gridpaint-app'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'gridpaint-app'
+          width: {
+              type: Number,
+              value: 10
+          },
+          height: {
+              type: Number,
+              value: 10
+          },
+          cells: {
+              type: Array,
+              value: () => [
+                  0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
+                  0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                  0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                  1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                  1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                  1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                  1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
+                  0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                  0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                  0, 0, 0, 1, 1, 1, 1, 0, 0, 0
+              ]
           }
         };
+      }
+
+      _wrapCells(cells) {
+          return cells.map(cell => ({ isFilled: cell > 0 }));
       }
     }
 
