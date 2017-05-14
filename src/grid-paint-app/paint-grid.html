@@ -44,35 +44,23 @@
               return {
                   store: Object,
 
-                  width: Number, // server-bound
-                  height: Number, // server-bound
-                  rows: Array, // server-bound
+                  width: Number, // retrieved from the store
+                  height: Number, // retrieved from the store
+                  rows: Array, // retrieved from the store
               }
           }
 
           connectedCallback() {
-              this._subscribe();
-              this._render();
+              this._subscription = this.store.subscribe(() => this._applyState());
+              this._applyState();
           }
 
           disconnectedCallback() {
-              this._unsubscribe();
+              this._subscription.unsubscribe();
+              this._subscription = null;
           }
 
-          _subscribe() {
-              this._subscription = this.store.subscribe(() => {
-                  this._render();
-              });
-          }
-
-          _unsubscribe() {
-              if (this._subscription) {
-                  this._subscription.unsubscribe();
-                  this._subscription = null;
-              }
-          }
-
-          _render() {
+          _applyState() {
               const state = this.store.getState();
               this.width = state.width;
               this.height = state.height;
