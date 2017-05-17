@@ -13,7 +13,8 @@
     <h1>Grid Paint</h1>
     <p>Tap on a cell to toggle its color</p>
     <size-selector width="{{width}}" height="{{height}}"></size-selector>
-    <paint-grid width="[[width]]" height="[[height]]" cells="[[cells]]"></paint-grid>
+    <paint-grid width="[[width]]" height="[[height]]" cells="[[cells]]">
+    </paint-grid>
   </template>
 
   <script>
@@ -24,8 +25,8 @@
       class GridPaintApp extends Polymer.Element {
           static get is() {
               return 'grid-paint-app';
-
           }
+
           static get properties() {
               return {
                   width: {
