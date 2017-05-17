@@ -8,7 +8,7 @@
       :host {
         display: block;
       }
-      
+
       .row {
         display: flex;
         flex-direction: row;
@@ -35,23 +35,25 @@
     </template>
   </template>
   <script>
-      class PaintGrid extends Polymer.GestureEventListeners(Polymer.Element) {
-          static get is() {
-              return 'paint-grid'
-          }
+      class PaintGrid extends
+            Polymer.GestureEventListeners(Polymer.Element) {
 
+          static get is() { return 'paint-grid' }
           static get properties() {
               return {
                   store: Object,
+                  _subsciption: { type: Object, value: null },
 
-                  width: Number, // retrieved from the store
-                  height: Number, // retrieved from the store
-                  rows: Array, // retrieved from the store
+                  rows: {
+                      type: Array,
+                      // computed: see _computeRows()
+                  }
               }
           }
 
           connectedCallback() {
-              this._subscription = this.store.subscribe(() => this._applyState());
+              this._subscription =
+                  this.store.subscribe(() => this._applyState());
               this._applyState();
           }
 
@@ -62,9 +64,8 @@
 
           _applyState() {
               const state = this.store.getState();
-              this.width = state.width;
-              this.height = state.height;
-              this.rows = this._computeRows(state.width, state.height, state.cells);
+              this.rows = this._computeRows(
+                  state.width, state.height, state.cells);
           }
 
           _computeRows(width, height, cells) {
