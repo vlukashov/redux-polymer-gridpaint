@@ -1,0 +1,30 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="paint-grid.html">
+<link rel="import" href="size-selector.html">
+
+<dom-module id="grid-paint-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h1>Grid Paint</h1>
+    <p>Tap on a cell to toggle its color</p>
+    <size-selector></size-selector>
+    <paint-grid></paint-grid>
+  </template>
+
+  <script>
+      /**
+       * @customElement
+       * @polymer
+       */
+      class GridPaintApp extends Polymer.Element {
+          static get is() { return 'grid-paint-app'; }
+      }
+
+      window.customElements.define(GridPaintApp.is, GridPaintApp);
+  </script>
+</dom-module>
